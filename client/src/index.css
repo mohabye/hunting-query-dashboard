@@ -1,0 +1,212 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  /* Professional Cybersecurity Color Theme */
+  /* Primary: Cyan (Tech/Security) */
+  --primary: #06b6d4;
+  --primary-foreground: #0f172a;
+  --sidebar-primary: #0891b2;
+  --sidebar-primary-foreground: #f0f9fa;
+  
+  /* Chart Colors: Professional Palette */
+  --chart-1: #06b6d4;
+  --chart-2: #10b981;
+  --chart-3: #ef4444;
+  --chart-4: #8b5cf6;
+  --chart-5: #f59e0b;
+  
+  --radius: 0.65rem;
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+  --card: #1e293b;
+  --card-foreground: #f1f5f9;
+  --popover: #1e293b;
+  --popover-foreground: #f1f5f9;
+  --secondary: #334155;
+  --secondary-foreground: #e2e8f0;
+  --muted: #475569;
+  --muted-foreground: #cbd5e1;
+  --accent: #06b6d4;
+  --accent-foreground: #0f172a;
+  --destructive: #ef4444;
+  --destructive-foreground: #fef2f2;
+  --border: #334155;
+  --input: #1e293b;
+  --ring: #06b6d4;
+  --sidebar: #0f172a;
+  --sidebar-foreground: #f1f5f9;
+  --sidebar-accent: #06b6d4;
+  --sidebar-accent-foreground: #0f172a;
+  --sidebar-border: #334155;
+  --sidebar-ring: #06b6d4;
+}
+
+.dark {
+  --primary: #06b6d4;
+  --primary-foreground: #0f172a;
+  --sidebar-primary: #0891b2;
+  --sidebar-primary-foreground: #f0f9fa;
+  --background: #0f172a;
+  --foreground: #f1f5f9;
+  --card: #1e293b;
+  --card-foreground: #f1f5f9;
+  --popover: #1e293b;
+  --popover-foreground: #f1f5f9;
+  --secondary: #334155;
+  --secondary-foreground: #e2e8f0;
+  --muted: #475569;
+  --muted-foreground: #cbd5e1;
+  --accent: #06b6d4;
+  --accent-foreground: #0f172a;
+  --destructive: #ef4444;
+  --destructive-foreground: #fef2f2;
+  --border: #334155;
+  --input: #1e293b;
+  --ring: #06b6d4;
+  --chart-1: #06b6d4;
+  --chart-2: #10b981;
+  --chart-3: #ef4444;
+  --chart-4: #8b5cf6;
+  --chart-5: #f59e0b;
+  --sidebar: #0f172a;
+  --sidebar-foreground: #f1f5f9;
+  --sidebar-accent: #06b6d4;
+  --sidebar-accent-foreground: #0f172a;
+  --sidebar-border: #334155;
+  --sidebar-ring: #06b6d4;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+  }
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [type="button"]:not(:disabled),
+  [type="submit"]:not(:disabled),
+  [type="reset"]:not(:disabled),
+  a[href],
+  select:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled) {
+    @apply cursor-pointer;
+  }
+}
+
+@layer components {
+  .container {
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .flex {
+    min-height: 0;
+    min-width: 0;
+  }
+
+  /* Command Center Custom Components */
+  .threat-badge {
+    @apply inline-flex items-center justify-center rounded-full font-mono text-xs font-bold;
+    clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+    padding: 0.5rem 0.75rem;
+  }
+
+  .threat-critical {
+    @apply bg-gradient-to-br from-red-950 to-red-900 text-red-100 border border-red-700;
+  }
+
+  .threat-high {
+    @apply bg-gradient-to-br from-orange-950 to-orange-900 text-orange-100 border border-orange-700;
+  }
+
+  .threat-medium {
+    @apply bg-gradient-to-br from-amber-950 to-amber-900 text-amber-100 border border-amber-700;
+  }
+
+  .threat-low {
+    @apply bg-gradient-to-br from-blue-950 to-blue-900 text-blue-100 border border-blue-700;
+  }
+
+  .data-source-tag {
+    @apply inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-mono bg-slate-700/50 text-slate-300 border border-slate-600/50;
+  }
+
+  .query-card {
+    @apply bg-card border border-border rounded-lg p-4 hover:border-accent/50 transition-all duration-300 hover:shadow-lg hover:shadow-amber-900/20;
+  }
+
+  .procedure-section {
+    @apply bg-slate-800/30 border border-slate-700/50 rounded-lg p-4 mb-4;
+  }
+
+  .grid-background {
+    background-image: 
+      linear-gradient(0deg, transparent 24%, rgba(79, 70, 229, 0.05) 25%, rgba(79, 70, 229, 0.05) 26%, transparent 27%, transparent 74%, rgba(79, 70, 229, 0.05) 75%, rgba(79, 70, 229, 0.05) 76%, transparent 77%, transparent),
+      linear-gradient(90deg, transparent 24%, rgba(79, 70, 229, 0.05) 25%, rgba(79, 70, 229, 0.05) 26%, transparent 27%, transparent 74%, rgba(79, 70, 229, 0.05) 75%, rgba(79, 70, 229, 0.05) 76%, transparent 77%, transparent);
+    background-size: 50px 50px;
+  }
+
+  @media (min-width: 640px) {
+    .container {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container {
+      padding-left: 2rem;
+      padding-right: 2rem;
+      max-width: 1280px;
+    }
+  }
+}

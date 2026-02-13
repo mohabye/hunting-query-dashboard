@@ -1,0 +1,328 @@
+{
+  "procedures": [
+    {
+      "id": "proc_001",
+      "name": "Process Injection",
+      "mitre_id": "T1055",
+      "mitre_name": "Process Injection",
+      "description": "Adversaries may inject code into processes to evade process-based defenses and/or elevate privileges.",
+      "tactics": ["Defense Evasion", "Privilege Escalation"],
+      "queries": ["query_001", "query_002", "query_003"]
+    },
+    {
+      "id": "proc_002",
+      "name": "Remote Service Session Initiation",
+      "mitre_id": "T1021.001",
+      "mitre_name": "Remote System Discovery - RDP",
+      "description": "Adversaries may use valid accounts to interact with remote systems using Remote Desktop Protocol (RDP).",
+      "tactics": ["Lateral Movement"],
+      "queries": ["query_004", "query_005"]
+    },
+    {
+      "id": "proc_003",
+      "name": "Command and Scripting Interpreter",
+      "mitre_id": "T1059",
+      "mitre_name": "Command and Scripting Interpreter",
+      "description": "Adversaries may abuse command and script interpreters to execute commands, scripts, or binaries.",
+      "tactics": ["Execution"],
+      "queries": ["query_006", "query_007", "query_008"]
+    },
+    {
+      "id": "proc_004",
+      "name": "Credential Dumping",
+      "mitre_id": "T1003",
+      "mitre_name": "OS Credential Dumping",
+      "description": "Adversaries may attempt to extract credential material from the operating system and software.",
+      "tactics": ["Credential Access"],
+      "queries": ["query_009", "query_010"]
+    },
+    {
+      "id": "proc_005",
+      "name": "Registry Run Keys",
+      "mitre_id": "T1547.001",
+      "mitre_name": "Boot or Logon Autostart Execution - Registry Run Keys",
+      "description": "Adversaries may achieve persistence by adding a program to a startup folder or referencing it with a registry run key.",
+      "tactics": ["Persistence", "Privilege Escalation"],
+      "queries": ["query_011", "query_012"]
+    }
+  ],
+  "queries": [
+    {
+      "id": "query_001",
+      "name": "CreateRemoteThread API Calls",
+      "procedure_id": "proc_001",
+      "description": "Detects usage of CreateRemoteThread API which is commonly used for process injection attacks.",
+      "threat_level": "high",
+      "coverage": 85,
+      "data_sources": ["ds_001", "ds_003"],
+      "query_syntax": "SELECT * FROM win:ProcessCreate WHERE TargetObject LIKE '%CreateRemoteThread%' OR CallStack LIKE '%CreateRemoteThread%'",
+      "event_ids": ["4688"],
+      "enabled": true,
+      "last_updated": "2026-02-05",
+      "detections": 12
+    },
+    {
+      "id": "query_002",
+      "name": "Sysmon Process Injection Detection",
+      "procedure_id": "proc_001",
+      "description": "Uses Sysmon Event ID 8 to detect CreateRemoteThread operations indicating potential process injection.",
+      "threat_level": "high",
+      "coverage": 92,
+      "data_sources": ["ds_002"],
+      "query_syntax": "SELECT * FROM sysmon WHERE EventID = 8 AND TargetObject LIKE '%CreateRemoteThread%'",
+      "event_ids": ["8"],
+      "enabled": true,
+      "last_updated": "2026-02-06",
+      "detections": 8
+    },
+    {
+      "id": "query_003",
+      "name": "VirtualAllocEx and WriteProcessMemory Sequence",
+      "procedure_id": "proc_001",
+      "description": "Detects the suspicious sequence of VirtualAllocEx followed by WriteProcessMemory API calls.",
+      "threat_level": "critical",
+      "coverage": 78,
+      "data_sources": ["ds_001", "ds_003"],
+      "query_syntax": "SELECT * FROM api_calls WHERE (FunctionName = 'VirtualAllocEx' OR FunctionName = 'WriteProcessMemory') AND ProcessName NOT IN ('System', 'explorer.exe')",
+      "event_ids": ["api_trace"],
+      "enabled": true,
+      "last_updated": "2026-02-04",
+      "detections": 15
+    },
+    {
+      "id": "query_004",
+      "name": "RDP Connection Attempts",
+      "procedure_id": "proc_002",
+      "description": "Detects RDP connection attempts by monitoring network connections on port 3389.",
+      "threat_level": "medium",
+      "coverage": 88,
+      "data_sources": ["ds_004", "ds_005"],
+      "query_syntax": "SELECT * FROM network_connections WHERE DestinationPort = 3389 AND Protocol = 'TCP'",
+      "event_ids": ["5156"],
+      "enabled": true,
+      "last_updated": "2026-02-06",
+      "detections": 24
+    },
+    {
+      "id": "query_005",
+      "name": "Lateral Movement via WMI",
+      "procedure_id": "proc_002",
+      "description": "Detects lateral movement attempts using WMI for remote command execution.",
+      "threat_level": "high",
+      "coverage": 72,
+      "data_sources": ["ds_001", "ds_003"],
+      "query_syntax": "SELECT * FROM process_create WHERE CommandLine LIKE '%wmic%' AND CommandLine LIKE '%remote%'",
+      "event_ids": ["4688"],
+      "enabled": true,
+      "last_updated": "2026-02-05",
+      "detections": 5
+    },
+    {
+      "id": "query_006",
+      "name": "PowerShell Script Execution",
+      "procedure_id": "proc_003",
+      "description": "Detects PowerShell script execution with suspicious parameters or encoded commands.",
+      "threat_level": "high",
+      "coverage": 95,
+      "data_sources": ["ds_001", "ds_006"],
+      "query_syntax": "SELECT * FROM process_create WHERE ParentImage LIKE '%powershell%' AND (CommandLine LIKE '%-enc%' OR CommandLine LIKE '%-EncodedCommand%')",
+      "event_ids": ["4688"],
+      "enabled": true,
+      "last_updated": "2026-02-06",
+      "detections": 31
+    },
+    {
+      "id": "query_007",
+      "name": "CMD.exe Spawned by Office Applications",
+      "procedure_id": "proc_003",
+      "description": "Detects cmd.exe spawned by Microsoft Office applications which is indicative of exploitation.",
+      "threat_level": "critical",
+      "coverage": 89,
+      "data_sources": ["ds_001", "ds_002"],
+      "query_syntax": "SELECT * FROM process_create WHERE ParentImage LIKE '%winword%' OR ParentImage LIKE '%excel%' OR ParentImage LIKE '%powerpnt%' AND Image LIKE '%cmd.exe%'",
+      "event_ids": ["1"],
+      "enabled": true,
+      "last_updated": "2026-02-06",
+      "detections": 3
+    },
+    {
+      "id": "query_008",
+      "name": "Suspicious Script Interpreter Execution",
+      "procedure_id": "proc_003",
+      "description": "Detects execution of script interpreters (cscript.exe, wscript.exe) with suspicious parameters.",
+      "threat_level": "medium",
+      "coverage": 81,
+      "data_sources": ["ds_001"],
+      "query_syntax": "SELECT * FROM process_create WHERE (Image LIKE '%cscript.exe%' OR Image LIKE '%wscript.exe%') AND CommandLine LIKE '%.js%' OR CommandLine LIKE '%.vbs%'",
+      "event_ids": ["4688"],
+      "enabled": true,
+      "last_updated": "2026-02-05",
+      "detections": 7
+    },
+    {
+      "id": "query_009",
+      "name": "LSASS Memory Dump Attempts",
+      "procedure_id": "proc_004",
+      "description": "Detects attempts to dump LSASS process memory using tools like procdump or rundll32.",
+      "threat_level": "critical",
+      "coverage": 76,
+      "data_sources": ["ds_001", "ds_003"],
+      "query_syntax": "SELECT * FROM process_create WHERE (CommandLine LIKE '%lsass%' AND CommandLine LIKE '%dump%') OR (Image LIKE '%procdump%' AND CommandLine LIKE '%lsass%')",
+      "event_ids": ["4688"],
+      "enabled": true,
+      "last_updated": "2026-02-06",
+      "detections": 2
+    },
+    {
+      "id": "query_010",
+      "name": "Mimikatz Execution Detection",
+      "procedure_id": "proc_004",
+      "description": "Detects execution of Mimikatz tool or similar credential dumping utilities.",
+      "threat_level": "critical",
+      "coverage": 68,
+      "data_sources": ["ds_001", "ds_002"],
+      "query_syntax": "SELECT * FROM process_create WHERE (Image LIKE '%mimikatz%' OR CommandLine LIKE '%mimikatz%') OR (CommandLine LIKE '%sekurlsa%' OR CommandLine LIKE '%lsadump%')",
+      "event_ids": ["1"],
+      "enabled": true,
+      "last_updated": "2026-02-04",
+      "detections": 1
+    },
+    {
+      "id": "query_011",
+      "name": "Registry Run Key Modifications",
+      "procedure_id": "proc_005",
+      "description": "Detects modifications to Windows Registry Run keys commonly used for persistence.",
+      "threat_level": "high",
+      "coverage": 91,
+      "data_sources": ["ds_007"],
+      "query_syntax": "SELECT * FROM registry_events WHERE TargetObject LIKE '%Software\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\Run%' AND EventType = 'CreateKey' OR EventType = 'SetValue'",
+      "event_ids": ["13"],
+      "enabled": true,
+      "last_updated": "2026-02-06",
+      "detections": 4
+    },
+    {
+      "id": "query_012",
+      "name": "Startup Folder Modifications",
+      "procedure_id": "proc_005",
+      "description": "Detects file creation or modification in Windows Startup folders.",
+      "threat_level": "medium",
+      "coverage": 84,
+      "data_sources": ["ds_008"],
+      "query_syntax": "SELECT * FROM file_events WHERE TargetFilename LIKE '%\\\\Startup\\\\%' AND (EventType = 'CreateKey' OR EventType = 'SetValue')",
+      "event_ids": ["11"],
+      "enabled": true,
+      "last_updated": "2026-02-05",
+      "detections": 6
+    }
+  ],
+  "data_sources": [
+    {
+      "id": "ds_001",
+      "name": "Windows Event Logs - Security",
+      "type": "ETW",
+      "description": "Windows Security Event Log containing process creation, network connections, and authentication events.",
+      "provider": "Microsoft-Windows-Security-Auditing",
+      "event_ids": ["4688", "5156", "4624"],
+      "enabled": true
+    },
+    {
+      "id": "ds_002",
+      "name": "Sysmon - Process Creation",
+      "type": "Sysmon",
+      "description": "Sysmon Event ID 1 - Process creation events with detailed command line and parent process information.",
+      "provider": "Sysmon",
+      "event_ids": ["1"],
+      "enabled": true
+    },
+    {
+      "id": "ds_003",
+      "name": "Sysmon - CreateRemoteThread",
+      "type": "Sysmon",
+      "description": "Sysmon Event ID 8 - CreateRemoteThread operations for process injection detection.",
+      "provider": "Sysmon",
+      "event_ids": ["8"],
+      "enabled": true
+    },
+    {
+      "id": "ds_004",
+      "name": "Windows Firewall Logs",
+      "type": "ETW",
+      "description": "Windows Firewall logs containing network connection attempts and blocked connections.",
+      "provider": "Microsoft-Windows-Windows Firewall With Advanced Security",
+      "event_ids": ["5156", "5157"],
+      "enabled": true
+    },
+    {
+      "id": "ds_005",
+      "name": "Network Connection Monitoring",
+      "type": "Network",
+      "description": "Network-based monitoring for suspicious connection patterns and lateral movement.",
+      "provider": "Network Sensor",
+      "event_ids": ["network_flow"],
+      "enabled": true
+    },
+    {
+      "id": "ds_006",
+      "name": "PowerShell Operational Logs",
+      "type": "ETW",
+      "description": "PowerShell operational logs capturing script execution and command line details.",
+      "provider": "Microsoft-Windows-PowerShell/Operational",
+      "event_ids": ["4104"],
+      "enabled": true
+    },
+    {
+      "id": "ds_007",
+      "name": "Registry Event Monitoring",
+      "type": "Sysmon",
+      "description": "Sysmon Event ID 13 - Registry value set operations for persistence mechanism detection.",
+      "provider": "Sysmon",
+      "event_ids": ["13"],
+      "enabled": true
+    },
+    {
+      "id": "ds_008",
+      "name": "File System Monitoring",
+      "type": "Sysmon",
+      "description": "Sysmon Event ID 11 - File creation events for detecting suspicious file operations.",
+      "provider": "Sysmon",
+      "event_ids": ["11"],
+      "enabled": true
+    }
+  ],
+  "hunt_engagements": [
+    {
+      "id": "hunt_001",
+      "name": "Process Injection Campaign",
+      "start_date": "2026-01-15",
+      "end_date": "2026-02-05",
+      "status": "completed",
+      "procedures_covered": ["proc_001"],
+      "total_queries": 3,
+      "detections_found": 35,
+      "severity": "high"
+    },
+    {
+      "id": "hunt_002",
+      "name": "Lateral Movement Detection",
+      "start_date": "2026-02-01",
+      "end_date": null,
+      "status": "active",
+      "procedures_covered": ["proc_002", "proc_003"],
+      "total_queries": 5,
+      "detections_found": 60,
+      "severity": "critical"
+    },
+    {
+      "id": "hunt_003",
+      "name": "Credential Access Assessment",
+      "start_date": "2026-02-06",
+      "end_date": null,
+      "status": "active",
+      "procedures_covered": ["proc_004"],
+      "total_queries": 2,
+      "detections_found": 3,
+      "severity": "critical"
+    }
+  ]
+}

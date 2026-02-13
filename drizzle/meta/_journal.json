@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1770559126104,
+      "tag": "0000_pink_nick_fury",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1770636472681,
+      "tag": "0001_bizarre_yellow_claw",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1771004815301,
+      "tag": "0002_real_weapon_omega",
+      "breakpoints": true
+    }
+  ]
+}
