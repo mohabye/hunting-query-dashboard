@@ -81,7 +81,7 @@ The **Hunting Query Management Dashboard** is a fully independent, self-hosted p
 
 #### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/hunting-query-dashboard.git
+git clone https://github.com/mohabye/hunting-query-dashboard.git
 cd hunting-query-dashboard
 ```
 
@@ -492,8 +492,7 @@ For issues, questions, or suggestions:
 ## 📞 Contact
 
 - **Author**: Muhab Yahia
-- **Email**: contact@example.com
-- **GitHub**: [@yourusername](https://github.com/yourusername)
+- **GitHub**: [@MuhapYahya](https://github.com/mohabye)
 
 ---
 
